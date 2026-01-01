@@ -1,0 +1,33 @@
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# Backend
+backend/build/
+backend/.gradle/
+backend/out/
+backend/bin/
+backend/target/
+
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+# Environment
+.env
+.env.local
+*.log
+
+# Sensitive - 절대 커밋 금지!
+**/application-secret.yml
+**/application-secret.properties
+
+# API Keys
+**/upbit-keys.yml
+
+# OS
+.DS_Store
+Thumbs.db
