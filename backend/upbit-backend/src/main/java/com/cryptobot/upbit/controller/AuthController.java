@@ -3,6 +3,7 @@ package com.cryptobot.upbit.controller;
 import com.cryptobot.upbit.dto.auth.AuthResponse;
 import com.cryptobot.upbit.dto.auth.LoginRequest;
 import com.cryptobot.upbit.dto.auth.SignupRequest;
+import com.cryptobot.upbit.dto.auth.UpdateApiKeyRequest;
 import com.cryptobot.upbit.dto.auth.UserDto;
 import com.cryptobot.upbit.service.AuthService;
 import jakarta.validation.Valid;
@@ -54,6 +55,22 @@ public class AuthController {
         log.info("Get current user request for email: {}", email);
 
         UserDto user = authService.getCurrentUser(email);
+
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 업비트 API 키 업데이트
+     */
+    @PutMapping("/api-keys")
+    public ResponseEntity<UserDto> updateApiKeys(
+            Authentication authentication,
+            @Valid @RequestBody UpdateApiKeyRequest request) {
+        String email = (String) authentication.getPrincipal();
+
+        log.info("Update API keys request for email: {}", email);
+
+        UserDto user = authService.updateApiKeys(email, request);
 
         return ResponseEntity.ok(user);
     }

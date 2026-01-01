@@ -4,6 +4,7 @@ import com.cryptobot.upbit.config.JwtProperties;
 import com.cryptobot.upbit.dto.auth.AuthResponse;
 import com.cryptobot.upbit.dto.auth.LoginRequest;
 import com.cryptobot.upbit.dto.auth.SignupRequest;
+import com.cryptobot.upbit.dto.auth.UpdateApiKeyRequest;
 import com.cryptobot.upbit.dto.auth.UserDto;
 import com.cryptobot.upbit.entity.User;
 import com.cryptobot.upbit.exception.DuplicateEmailException;
@@ -125,6 +126,29 @@ public class AuthService {
     public UserDto getCurrentUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + email));
+
+        return convertToUserDto(user);
+    }
+
+    /**
+     * 업비트 API 키 업데이트
+     */
+    @Transactional
+    public UserDto updateApiKeys(String email, UpdateApiKeyRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + email));
+
+        // API 키 암호화
+        String encryptedAccessKey = encryptionService.encrypt(request.getUpbitAccessKey());
+        String encryptedSecretKey = encryptionService.encrypt(request.getUpbitSecretKey());
+
+        // API 키 업데이트
+        user.setUpbitAccessKey(encryptedAccessKey);
+        user.setUpbitSecretKey(encryptedSecretKey);
+
+        userRepository.save(user);
+
+        log.info("API keys updated for user: {}", user.getEmail());
 
         return convertToUserDto(user);
     }
