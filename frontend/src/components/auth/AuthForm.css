@@ -50,25 +50,25 @@
 .form-group input {
   width: 100%;
   padding: 14px 16px;
-  background: #0f1429;
-  border: 1px solid rgba(94, 96, 206, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(94, 96, 206, 0.4);
   border-radius: 8px;
-  font-size: 14px;
-  color: #e8eaf6;
+  font-size: 15px;
+  color: #ffffff;
   box-sizing: border-box;
   transition: all 0.3s ease;
 }
 
 .form-group input::placeholder {
-  color: #6b7199;
+  color: rgba(232, 234, 246, 0.4);
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #00d4ff;
-  background: #141a33;
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1),
-              0 0 15px rgba(0, 212, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15),
+              0 0 15px rgba(0, 212, 255, 0.3);
 }
 
 .auth-button {
