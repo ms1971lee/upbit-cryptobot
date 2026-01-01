@@ -37,7 +37,8 @@ apiClient.interceptors.response.use(
 export const authAPI = {
   signup: (data) => apiClient.post('/api/auth/signup', data),
   login: (data) => apiClient.post('/api/auth/login', data),
-  getCurrentUser: () => apiClient.get('/api/auth/me')
+  getCurrentUser: () => apiClient.get('/api/auth/me'),
+  updateApiKeys: (data) => apiClient.put('/api/auth/api-keys', data)
 };
 
 export default apiClient;

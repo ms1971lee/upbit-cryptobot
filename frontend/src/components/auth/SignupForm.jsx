@@ -10,9 +10,7 @@ export const SignupForm = () => {
     email: '',
     password: '',
     username: '',
-    phoneNumber: '',
-    upbitAccessKey: '',
-    upbitSecretKey: ''
+    phoneNumber: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -102,30 +100,6 @@ export const SignupForm = () => {
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="010-1234-5678"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="upbitAccessKey">업비트 Access Key</label>
-            <input
-              type="text"
-              id="upbitAccessKey"
-              name="upbitAccessKey"
-              value={formData.upbitAccessKey}
-              onChange={handleChange}
-              placeholder="업비트 API Access Key (선택)"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="upbitSecretKey">업비트 Secret Key</label>
-            <input
-              type="text"
-              id="upbitSecretKey"
-              name="upbitSecretKey"
-              value={formData.upbitSecretKey}
-              onChange={handleChange}
-              placeholder="업비트 API Secret Key (선택)"
             />
           </div>
 

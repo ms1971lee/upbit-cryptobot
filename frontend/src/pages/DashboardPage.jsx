@@ -48,6 +48,28 @@ const DashboardPage = () => {
           <h2>환영합니다!</h2>
           <p>Upbit Cryptobot에 로그인하셨습니다.</p>
           <p>여기에서 암호화폐 자동매매를 관리할 수 있습니다.</p>
+          {!user?.hasUpbitApiKey && (
+            <div style={{ marginTop: '20px' }}>
+              <button
+                onClick={() => navigate('/api-settings')}
+                className="auth-button"
+                style={{ width: 'auto', padding: '12px 24px' }}
+              >
+                API 키 설정하기
+              </button>
+            </div>
+          )}
+          {user?.hasUpbitApiKey && (
+            <div style={{ marginTop: '20px' }}>
+              <button
+                onClick={() => navigate('/api-settings')}
+                className="logout-button"
+                style={{ width: 'auto', padding: '12px 24px' }}
+              >
+                API 키 관리
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
