@@ -3,7 +3,7 @@ spring:
     name: upbit-cryptobot
   
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:file:./data/upbit-cryptobot
     username: sa
     password:
     driver-class-name: org.h2.Driver

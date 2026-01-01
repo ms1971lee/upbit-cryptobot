@@ -17,5 +17,7 @@ public class UserDto {
 
     private String phoneNumber;
 
-    private boolean hasUpbitApiKey; // API 키 존재 여부만 전달 (보안)
+    private boolean hasUpbitApiKey; // API 키 존재 여부만 전달 (보안) - deprecated
+
+    private long apiKeyCount; // 등록된 API 키 개수
 }

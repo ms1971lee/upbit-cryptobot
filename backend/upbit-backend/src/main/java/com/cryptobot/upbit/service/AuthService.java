@@ -29,6 +29,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final EncryptionService encryptionService;
     private final JwtProperties jwtProperties;
+    private final com.cryptobot.upbit.repository.ApiKeyRepository apiKeyRepository;
 
     /**
      * 회원가입
@@ -157,13 +158,15 @@ public class AuthService {
      * User 엔티티를 UserDto로 변환
      */
     private UserDto convertToUserDto(User user) {
+        long apiKeyCount = apiKeyRepository.countByUserId(user.getId());
+
         return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .phoneNumber(user.getPhoneNumber())
-                .hasUpbitApiKey(StringUtils.hasText(user.getUpbitAccessKey())
-                        && StringUtils.hasText(user.getUpbitSecretKey()))
+                .hasUpbitApiKey(apiKeyCount > 0) // 하위 호환성 유지
+                .apiKeyCount(apiKeyCount)
                 .build();
     }
 }
