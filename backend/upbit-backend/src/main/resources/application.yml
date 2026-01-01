@@ -20,12 +20,15 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          secret-key: upbit-cryptobot-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
+
+# JWT 설정
+jwt:
+  secret-key: ${JWT_SECRET_KEY:upbit-cryptobot-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm}
+  access-token-expiration: 3600000 # 1시간 (밀리초)
+
+# 암호화 설정 (업비트 API 키 저장용)
+encryption:
+  aes-key: ${AES_SECRET_KEY:upbit-aes-encryption-key-32-bytes-required-for-aes256-encryption}
 
 server:
   port: 9090
