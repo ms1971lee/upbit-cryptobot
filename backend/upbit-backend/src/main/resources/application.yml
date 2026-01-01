@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: upbit-cryptobot
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: upbit-cryptobot-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
+
+server:
+  port: 9090
+  error:
+    include-message: always
+    include-binding-errors: always
+
+logging:
+  level:
+    com.cryptobot.upbit: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+
+# Upbit API 기본 설정
+upbit:
+  api:
+    base-url: https://api.upbit.com/v1
