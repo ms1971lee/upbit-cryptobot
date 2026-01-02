@@ -1,6 +1,8 @@
 package com.cryptobot.upbit.service;
 
 import com.cryptobot.upbit.config.UpbitApiProperties;
+import com.cryptobot.upbit.entity.ApiKey;
+import com.cryptobot.upbit.repository.ApiKeyRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ public class UpbitApiService {
 
     private final UpbitApiProperties upbitApiProperties;
     private final WebClient.Builder webClientBuilder;
+    private final ApiKeyRepository apiKeyRepository;
+    private final EncryptionService encryptionService;
 
     public Mono<Map<String, Object>> testConnection(String keyName) {
         try {
@@ -105,5 +109,73 @@ public class UpbitApiService {
                     errorResult.put("error", error.getMessage());
                     return Mono.just(errorResult);
                 });
+    }
+
+    /**
+     * 사용자의 활성화된 API 키로 계좌 조회 (인증 필요)
+     */
+    public Mono<Map<String, Object>> getAccounts(Long userId) {
+        try {
+            // 사용자의 활성화된 API 키 조회
+            ApiKey apiKey = apiKeyRepository.findByUserIdAndIsActiveTrue(userId)
+                    .orElseThrow(() -> new RuntimeException("활성화된 API 키를 찾을 수 없습니다"));
+
+            // API 키 복호화
+            String accessKey = encryptionService.decrypt(apiKey.getAccessKey());
+            String secretKey = encryptionService.decrypt(apiKey.getSecretKey());
+
+            // JWT 토큰 생성
+            String authToken = generateUpbitJwtToken(accessKey, secretKey);
+
+            // 업비트 API 호출
+            WebClient webClient = webClientBuilder
+                    .baseUrl(upbitApiProperties.getBaseUrl())
+                    .build();
+
+            return webClient.get()
+                    .uri("/accounts")
+                    .header("Authorization", authToken)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .map(response -> {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("success", true);
+                        result.put("apiKeyName", apiKey.getName());
+                        result.put("accounts", response);
+                        return result;
+                    })
+                    .onErrorResume(error -> {
+                        log.error("Failed to get accounts for user: {}", userId, error);
+                        Map<String, Object> errorResult = new HashMap<>();
+                        errorResult.put("success", false);
+                        errorResult.put("error", error.getMessage());
+                        return Mono.just(errorResult);
+                    });
+
+        } catch (Exception e) {
+            log.error("Error getting accounts for user: {}", userId, e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("error", e.getMessage());
+            return Mono.just(errorResult);
+        }
+    }
+
+    /**
+     * 업비트 JWT 토큰 생성
+     */
+    private String generateUpbitJwtToken(String accessKey, String secretKey) {
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("access_key", accessKey);
+        claims.put("nonce", UUID.randomUUID().toString());
+
+        String jwtToken = Jwts.builder()
+                .claims(claims)
+                .signWith(key)
+                .compact();
+
+        return "Bearer " + jwtToken;
     }
 }

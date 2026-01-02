@@ -5,6 +5,7 @@ import { PrivateRoute } from './components/common/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
+import UserProfilePage from './pages/UserProfilePage';
 import ApiSettingsPage from './pages/ApiSettingsPage';
 
 function App() {
@@ -19,6 +20,14 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <UserProfilePage />
               </PrivateRoute>
             }
           />
