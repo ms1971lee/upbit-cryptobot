@@ -2,9 +2,11 @@ package com.cryptobot.upbit.service;
 
 import com.cryptobot.upbit.config.JwtProperties;
 import com.cryptobot.upbit.dto.auth.AuthResponse;
+import com.cryptobot.upbit.dto.auth.ChangePasswordRequest;
 import com.cryptobot.upbit.dto.auth.LoginRequest;
 import com.cryptobot.upbit.dto.auth.SignupRequest;
 import com.cryptobot.upbit.dto.auth.UpdateApiKeyRequest;
+import com.cryptobot.upbit.dto.auth.UpdateProfileRequest;
 import com.cryptobot.upbit.dto.auth.UserDto;
 import com.cryptobot.upbit.entity.User;
 import com.cryptobot.upbit.exception.DuplicateEmailException;
@@ -152,6 +154,53 @@ public class AuthService {
         log.info("API keys updated for user: {}", user.getEmail());
 
         return convertToUserDto(user);
+    }
+
+    /**
+     * 프로필 업데이트 (사용자명, 전화번호)
+     */
+    @Transactional
+    public UserDto updateProfile(String email, UpdateProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + email));
+
+        // 사용자명 업데이트 (null이 아닌 경우에만)
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+
+        // 전화번호 업데이트 (null이 아닌 경우에만)
+        if (request.getPhoneNumber() != null) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
+
+        userRepository.save(user);
+
+        log.info("Profile updated for user: {}", user.getEmail());
+
+        return convertToUserDto(user);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + email));
+
+        // 현재 비밀번호 검증
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("현재 비밀번호가 올바르지 않습니다");
+        }
+
+        // 새 비밀번호 암호화 및 업데이트
+        String encryptedNewPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(encryptedNewPassword);
+
+        userRepository.save(user);
+
+        log.info("Password changed for user: {}", user.getEmail());
     }
 
     /**

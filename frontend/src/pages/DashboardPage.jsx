@@ -39,8 +39,17 @@ const DashboardPage = () => {
           <div className="info-row">
             <span className="label">업비트 API 키:</span>
             <span className="value">
-              {user?.hasUpbitApiKey ? '✅ 설정됨' : '❌ 미설정'}
+              {user?.apiKeyCount > 0 ? `✅ ${user.apiKeyCount}개 등록됨` : '❌ 미설정'}
             </span>
+          </div>
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={() => navigate('/profile')}
+              className="logout-button"
+              style={{ width: 'auto', padding: '12px 24px' }}
+            >
+              프로필 수정
+            </button>
           </div>
         </div>
 

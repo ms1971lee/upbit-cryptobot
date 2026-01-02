@@ -1,9 +1,11 @@
 package com.cryptobot.upbit.controller;
 
 import com.cryptobot.upbit.dto.auth.AuthResponse;
+import com.cryptobot.upbit.dto.auth.ChangePasswordRequest;
 import com.cryptobot.upbit.dto.auth.LoginRequest;
 import com.cryptobot.upbit.dto.auth.SignupRequest;
 import com.cryptobot.upbit.dto.auth.UpdateApiKeyRequest;
+import com.cryptobot.upbit.dto.auth.UpdateProfileRequest;
 import com.cryptobot.upbit.dto.auth.UserDto;
 import com.cryptobot.upbit.service.AuthService;
 import jakarta.validation.Valid;
@@ -73,5 +75,37 @@ public class AuthController {
         UserDto user = authService.updateApiKeys(email, request);
 
         return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 프로필 업데이트
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<UserDto> updateProfile(
+            Authentication authentication,
+            @Valid @RequestBody UpdateProfileRequest request) {
+        String email = (String) authentication.getPrincipal();
+
+        log.info("Update profile request for email: {}", email);
+
+        UserDto user = authService.updateProfile(email, request);
+
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @PutMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            Authentication authentication,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        String email = (String) authentication.getPrincipal();
+
+        log.info("Change password request for email: {}", email);
+
+        authService.changePassword(email, request);
+
+        return ResponseEntity.ok().build();
     }
 }

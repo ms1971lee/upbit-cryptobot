@@ -6,7 +6,7 @@
 
 .api-settings-content {
   padding: 40px;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -21,14 +21,8 @@
   transition: all 0.3s ease;
 }
 
-.api-settings-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2),
-              0 0 2px rgba(0, 212, 255, 0.5);
-  transform: translateY(-4px);
-}
-
 .api-settings-card h2 {
-  margin: 0 0 30px 0;
+  margin: 0;
   color: #e8eaf6;
   font-size: 24px;
   font-weight: 700;
@@ -36,39 +30,21 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
-  padding-bottom: 15px;
 }
 
-.api-status {
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  padding: 16px 20px;
-  border-radius: 8px;
+.api-form-section {
+  background: rgba(15, 20, 41, 0.5);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(94, 96, 206, 0.2);
   margin-bottom: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.api-status.configured {
-  background: rgba(0, 255, 136, 0.1);
-  border-color: rgba(0, 255, 136, 0.3);
-}
-
-.api-status.not-configured {
-  background: rgba(255, 159, 64, 0.1);
-  border-color: rgba(255, 159, 64, 0.3);
-}
-
-.api-status-icon {
-  font-size: 20px;
-}
-
-.api-status-text {
-  font-size: 14px;
-  color: #e8eaf6;
-  font-weight: 500;
+.api-form-section h3 {
+  margin: 0 0 20px 0;
+  color: #00d4ff;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .api-guide {
@@ -107,6 +83,146 @@
 .api-guide a:hover {
   color: #5e60ce;
   text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.api-keys-list h3 {
+  margin: 0 0 20px 0;
+  color: #e8eaf6;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.no-api-keys {
+  text-align: center;
+  padding: 40px;
+  color: #b8bfd8;
+  background: rgba(94, 96, 206, 0.05);
+  border-radius: 12px;
+  border: 1px dashed rgba(94, 96, 206, 0.3);
+}
+
+.no-api-keys p {
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.api-keys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.api-key-card {
+  background: rgba(15, 20, 41, 0.6);
+  border: 1px solid rgba(94, 96, 206, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.api-key-card.active {
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+.api-key-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+}
+
+.api-key-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(94, 96, 206, 0.2);
+}
+
+.api-key-header h4 {
+  margin: 0;
+  color: #e8eaf6;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.active-badge {
+  background: linear-gradient(135deg, #00d4ff 0%, #5e60ce 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.api-key-info {
+  margin-bottom: 15px;
+}
+
+.api-key-info .info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.api-key-info .label {
+  color: #b8bfd8;
+  font-weight: 500;
+}
+
+.api-key-info .value {
+  color: #e8eaf6;
+  font-family: monospace;
+}
+
+.api-key-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.api-key-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activate-button {
+  background: linear-gradient(135deg, #00d4ff 0%, #5e60ce 100%);
+  color: white;
+}
+
+.activate-button:hover {
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.edit-button {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  color: #00d4ff;
+}
+
+.edit-button:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00d4ff;
+}
+
+.delete-button {
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.4);
+  color: #ff6b81;
+}
+
+.delete-button:hover {
+  background: rgba(255, 71, 87, 0.2);
+  border-color: #ff6b81;
 }
 
 .success-message {

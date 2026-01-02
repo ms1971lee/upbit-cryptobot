@@ -38,7 +38,19 @@ export const authAPI = {
   signup: (data) => apiClient.post('/api/auth/signup', data),
   login: (data) => apiClient.post('/api/auth/login', data),
   getCurrentUser: () => apiClient.get('/api/auth/me'),
-  updateApiKeys: (data) => apiClient.put('/api/auth/api-keys', data)
+  updateApiKeys: (data) => apiClient.put('/api/auth/api-keys', data), // deprecated
+
+  // 프로필 관리
+  updateProfile: (data) => apiClient.put('/api/auth/profile', data),
+  changePassword: (data) => apiClient.put('/api/auth/password', data),
+
+  // API Key 관리
+  getAllApiKeys: () => apiClient.get('/api/api-keys'),
+  getActiveApiKey: () => apiClient.get('/api/api-keys/active'),
+  createApiKey: (data) => apiClient.post('/api/api-keys', data),
+  updateApiKey: (id, data) => apiClient.put(`/api/api-keys/${id}`, data),
+  deleteApiKey: (id) => apiClient.delete(`/api/api-keys/${id}`),
+  activateApiKey: (id) => apiClient.post(`/api/api-keys/${id}/activate`)
 };
 
 export default apiClient;

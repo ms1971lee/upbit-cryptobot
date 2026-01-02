@@ -1,0 +1,219 @@
+.profile-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  background-attachment: fixed;
+  padding: 40px 20px;
+}
+
+.profile-header {
+  max-width: 1000px;
+  margin: 0 auto 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-header h1 {
+  color: #e8eaf6;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  margin: 0;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background: rgba(94, 96, 206, 0.2);
+  color: #00d4ff;
+  border: 1px solid rgba(94, 96, 206, 0.4);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(94, 96, 206, 0.3);
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.profile-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px;
+}
+
+.profile-section {
+  background: rgba(26, 31, 58, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15),
+              0 0 1px rgba(0, 212, 255, 0.3);
+  border: 1px solid rgba(94, 96, 206, 0.2);
+  transition: all 0.3s ease;
+}
+
+.profile-section:hover {
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.25),
+              0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+.profile-section h2 {
+  margin: 0 0 25px 0;
+  color: #e8eaf6;
+  font-size: 22px;
+  font-weight: 600;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(94, 96, 206, 0.3);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #b8bfd8;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(94, 96, 206, 0.4);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #ffffff;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(232, 234, 246, 0.4);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #00d4ff;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15),
+              0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.form-group input.disabled-input {
+  background: rgba(255, 255, 255, 0.02);
+  color: #6b7199;
+  cursor: not-allowed;
+}
+
+.input-hint {
+  display: block;
+  margin-top: 6px;
+  color: #6b7199;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.profile-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #00d4ff 0%, #5e60ce 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.profile-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.profile-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+}
+
+.profile-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.profile-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.error-message {
+  background: rgba(255, 71, 87, 0.15);
+  border: 1px solid rgba(255, 71, 87, 0.4);
+  color: #ff6b81;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .profile-header h1 {
+    font-size: 28px;
+  }
+
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-section {
+    padding: 25px;
+  }
+}
