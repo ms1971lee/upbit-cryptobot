@@ -7,6 +7,7 @@ import com.cryptobot.upbit.entity.User;
 import com.cryptobot.upbit.repository.UserRepository;
 import com.cryptobot.upbit.service.ApiKeyService;
 import com.cryptobot.upbit.service.UpbitApiService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class ApiKeyController {
     private final ApiKeyService apiKeyService;
     private final UpbitApiService upbitApiService;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * 모든 API 키 조회
@@ -36,6 +38,22 @@ public class ApiKeyController {
         log.info("Get all API keys request for user: {}", email);
 
         List<ApiKeyDto> apiKeys = apiKeyService.getAllApiKeys(email);
+
+        // JSON 응답 로깅
+        log.info("=== Returning {} API Keys to Frontend ===", apiKeys.size());
+        apiKeys.forEach(key -> {
+            log.info("Response DTO - ID: {}, Name: '{}', AccessKeyMasked: '{}', IsActive: {}",
+                     key.getId(), key.getName(), key.getAccessKeyMasked(), key.getIsActive());
+        });
+
+        // 실제 JSON 직렬화 확인
+        try {
+            String json = objectMapper.writeValueAsString(apiKeys);
+            log.info("=== ACTUAL JSON RESPONSE ===");
+            log.info(json);
+        } catch (Exception e) {
+            log.error("Failed to serialize API keys to JSON", e);
+        }
 
         return ResponseEntity.ok(apiKeys);
     }

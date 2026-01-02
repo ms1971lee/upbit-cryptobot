@@ -25,6 +25,12 @@ const ApiSettingsPage = () => {
     loadApiKeys();
   }, []);
 
+  useEffect(() => {
+    console.log('=== formData changed ===');
+    console.log('formData.accessKey:', formData.accessKey);
+    console.log('formData:', formData);
+  }, [formData]);
+
   const loadApiKeys = async () => {
     try {
       const response = await authAPI.getAllApiKeys();
@@ -97,13 +103,21 @@ const ApiSettingsPage = () => {
   };
 
   const handleEdit = (apiKey) => {
+    console.log('=== handleEdit called ===');
+    console.log('apiKey object:', apiKey);
+    console.log('apiKey fields:', Object.keys(apiKey));
+    console.log('apiKey.name:', apiKey.name);
+    console.log('apiKey.accessKeyMasked:', apiKey.accessKeyMasked);
+
     setEditingKey(apiKey);
-    setFormData({
+    const newFormData = {
       name: apiKey.name,
       accessKey: '',
       secretKey: '',
       isActive: apiKey.isActive
-    });
+    };
+    console.log('Setting formData to:', newFormData);
+    setFormData(newFormData);
     setShowForm(true);
   };
 
@@ -216,6 +230,7 @@ const ApiSettingsPage = () => {
                     onChange={handleChange}
                     required={!editingKey}
                     placeholder="업비트 API Access Key"
+                    autoComplete="off"
                   />
                 </div>
 
@@ -229,6 +244,7 @@ const ApiSettingsPage = () => {
                     onChange={handleChange}
                     required={!editingKey}
                     placeholder="업비트 API Secret Key"
+                    autoComplete="new-password"
                   />
                 </div>
 
