@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -119,7 +118,7 @@ public class ApiKeyController {
      * API 키 테스트 (업비트 계좌 조회)
      */
     @PostMapping("/{id}/test")
-    public Mono<ResponseEntity<Map<String, Object>>> testApiKey(
+    public ResponseEntity<Map<String, Object>> testApiKey(
             Authentication authentication,
             @PathVariable Long id) {
         String email = (String) authentication.getPrincipal();
@@ -128,7 +127,12 @@ public class ApiKeyController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
-        return upbitApiService.testApiKeyById(id, user.getId())
-                .map(ResponseEntity::ok);
+        // Block and wait for the reactive response
+        Map<String, Object> result = upbitApiService.testApiKeyById(id, user.getId())
+                .block(); // Convert Mono to blocking call
+
+        log.info("API key test completed for id: {}, success: {}", id, result.get("success"));
+
+        return ResponseEntity.ok(result);
     }
 }
