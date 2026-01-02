@@ -188,6 +188,7 @@ public class UpbitApiService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .map(response -> {
+                        log.info("Upbit API response for API key {}: {}", apiKeyId, response);
                         Map<String, Object> result = new HashMap<>();
                         result.put("success", true);
                         result.put("message", "API 키가 정상적으로 작동합니다");
@@ -196,11 +197,18 @@ public class UpbitApiService {
                         return result;
                     })
                     .onErrorResume(error -> {
-                        log.error("API key test failed for id: {}", apiKeyId, error);
+                        log.error("API key test failed for id: {}, error type: {}, message: {}",
+                                  apiKeyId, error.getClass().getName(), error.getMessage());
+                        if (error instanceof org.springframework.web.reactive.function.client.WebClientResponseException) {
+                            org.springframework.web.reactive.function.client.WebClientResponseException webError =
+                                (org.springframework.web.reactive.function.client.WebClientResponseException) error;
+                            log.error("HTTP Status: {}, Response Body: {}", webError.getStatusCode(), webError.getResponseBodyAsString());
+                        }
                         Map<String, Object> errorResult = new HashMap<>();
                         errorResult.put("success", false);
                         errorResult.put("message", "API 키 테스트 실패");
                         errorResult.put("error", error.getMessage());
+                        errorResult.put("errorType", error.getClass().getSimpleName());
                         return Mono.just(errorResult);
                     });
 

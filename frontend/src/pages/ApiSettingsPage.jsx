@@ -28,6 +28,7 @@ const ApiSettingsPage = () => {
   const loadApiKeys = async () => {
     try {
       const response = await authAPI.getAllApiKeys();
+      console.log('Loaded API keys:', response.data);
       setApiKeys(response.data);
     } catch (err) {
       console.error('Failed to load API keys:', err);
