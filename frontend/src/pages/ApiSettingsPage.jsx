@@ -226,7 +226,18 @@ const ApiSettingsPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="accessKey">Access Key {editingKey && '(변경하려면 입력)'}</label>
+                  <label htmlFor="accessKey">Access Key</label>
+                  {editingKey && (
+                    <div style={{
+                      padding: '10px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                      color: '#888'
+                    }}>
+                      현재: {editingKey.accessKeyMasked}
+                    </div>
+                  )}
                   <input
                     type="text"
                     id="accessKey"
@@ -234,7 +245,7 @@ const ApiSettingsPage = () => {
                     value={formData.accessKey}
                     onChange={handleChange}
                     required={!editingKey}
-                    placeholder="업비트 API Access Key"
+                    placeholder={editingKey ? "변경하려면 새 Access Key 입력" : "업비트 API Access Key"}
                     autoComplete="off"
                     data-lpignore="true"
                     data-form-type="other"
@@ -242,7 +253,18 @@ const ApiSettingsPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="secretKey">Secret Key {editingKey && '(변경하려면 입력)'}</label>
+                  <label htmlFor="secretKey">Secret Key</label>
+                  {editingKey && (
+                    <div style={{
+                      padding: '10px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                      color: '#888'
+                    }}>
+                      현재: ••••••••••••
+                    </div>
+                  )}
                   <input
                     type="password"
                     id="secretKey"
@@ -250,7 +272,7 @@ const ApiSettingsPage = () => {
                     value={formData.secretKey}
                     onChange={handleChange}
                     required={!editingKey}
-                    placeholder="업비트 API Secret Key"
+                    placeholder={editingKey ? "변경하려면 새 Secret Key 입력" : "업비트 API Secret Key"}
                     autoComplete="new-password"
                     data-lpignore="true"
                     data-form-type="other"
