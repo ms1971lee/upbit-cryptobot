@@ -50,7 +50,14 @@ const ApiSettingsPage = () => {
 
     try {
       if (editingKey) {
-        await authAPI.updateApiKey(editingKey.id, formData);
+        // 수정 시: 빈 문자열 제거 (입력된 필드만 전송)
+        const updateData = {
+          name: formData.name || undefined,
+          accessKey: formData.accessKey || undefined,
+          secretKey: formData.secretKey || undefined,
+          isActive: formData.isActive
+        };
+        await authAPI.updateApiKey(editingKey.id, updateData);
         setSuccess('API 키가 성공적으로 수정되었습니다!');
       } else {
         await authAPI.createApiKey(formData);
