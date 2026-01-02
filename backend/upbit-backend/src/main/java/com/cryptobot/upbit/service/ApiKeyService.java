@@ -34,9 +34,19 @@ public class ApiKeyService {
         User user = getUserByEmail(email);
         List<ApiKey> apiKeys = apiKeyRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
 
-        return apiKeys.stream()
-                .map(this::convertToDto)
+        log.info("=== Get All API Keys ===");
+        log.info("User: {}, Found {} API keys", email, apiKeys.size());
+
+        List<ApiKeyDto> dtos = apiKeys.stream()
+                .map(apiKey -> {
+                    ApiKeyDto dto = convertToDto(apiKey);
+                    log.info("API Key - ID: {}, Name: '{}', IsActive: {}, AccessKeyMasked: {}",
+                             dto.getId(), dto.getName(), dto.getIsActive(), dto.getAccessKeyMasked());
+                    return dto;
+                })
                 .collect(Collectors.toList());
+
+        return dtos;
     }
 
     /**
@@ -76,38 +86,61 @@ public class ApiKeyService {
      */
     @Transactional
     public ApiKeyDto updateApiKey(String email, Long apiKeyId, UpdateApiKeyRequest request) {
+        log.info("=== API Key Update Request ===");
+        log.info("User: {}, API Key ID: {}", email, apiKeyId);
+        log.info("Request - Name: {}, AccessKey: {}, SecretKey: {}, IsActive: {}",
+                 request.getName(),
+                 request.getAccessKey() != null ? "PROVIDED" : "null",
+                 request.getSecretKey() != null ? "PROVIDED" : "null",
+                 request.getIsActive());
+
         User user = getUserByEmail(email);
         ApiKey apiKey = apiKeyRepository.findByIdAndUserId(apiKeyId, user.getId())
                 .orElseThrow(() -> new RuntimeException("API 키를 찾을 수 없습니다"));
 
+        log.info("Before Update - Name: {}, IsActive: {}", apiKey.getName(), apiKey.getIsActive());
+
         // 이름 수정
         if (StringUtils.hasText(request.getName())) {
+            log.info("Updating name from '{}' to '{}'", apiKey.getName(), request.getName());
             apiKey.setName(request.getName());
+        } else {
+            log.info("Name not updated (no value provided)");
         }
 
         // Access Key 수정
         if (StringUtils.hasText(request.getAccessKey())) {
+            log.info("Updating access key");
             String encryptedAccessKey = encryptionService.encrypt(request.getAccessKey());
             apiKey.setAccessKey(encryptedAccessKey);
+        } else {
+            log.info("Access key not updated (no value provided)");
         }
 
         // Secret Key 수정
         if (StringUtils.hasText(request.getSecretKey())) {
+            log.info("Updating secret key");
             String encryptedSecretKey = encryptionService.encrypt(request.getSecretKey());
             apiKey.setSecretKey(encryptedSecretKey);
+        } else {
+            log.info("Secret key not updated (no value provided)");
         }
 
         // 활성화 상태 수정
         if (request.getIsActive() != null) {
+            log.info("Updating isActive from {} to {}", apiKey.getIsActive(), request.getIsActive());
             if (Boolean.TRUE.equals(request.getIsActive())) {
                 deactivateAllApiKeys(user.getId());
             }
             apiKey.setIsActive(request.getIsActive());
+        } else {
+            log.info("IsActive not updated (no value provided)");
         }
 
         ApiKey updatedApiKey = apiKeyRepository.save(apiKey);
 
-        log.info("API key updated for user: {}, id: {}", user.getEmail(), apiKeyId);
+        log.info("After Update - Name: {}, IsActive: {}", updatedApiKey.getName(), updatedApiKey.getIsActive());
+        log.info("API key updated successfully for user: {}, id: {}", user.getEmail(), apiKeyId);
 
         return convertToDto(updatedApiKey);
     }

@@ -58,9 +58,27 @@ const ApiSettingsPage = () => {
           secretKey: formData.secretKey || undefined,
           isActive: formData.isActive
         };
-        await authAPI.updateApiKey(editingKey.id, updateData);
+        console.log('=== API Key Update Request ===');
+        console.log('Editing Key ID:', editingKey.id);
+        console.log('Form Data:', {
+          name: formData.name,
+          accessKey: formData.accessKey ? 'PROVIDED' : 'empty',
+          secretKey: formData.secretKey ? 'PROVIDED' : 'empty',
+          isActive: formData.isActive
+        });
+        console.log('Update Data (after undefined conversion):', {
+          name: updateData.name,
+          accessKey: updateData.accessKey ? 'PROVIDED' : 'undefined',
+          secretKey: updateData.secretKey ? 'PROVIDED' : 'undefined',
+          isActive: updateData.isActive
+        });
+
+        const response = await authAPI.updateApiKey(editingKey.id, updateData);
+        console.log('Update Response:', response.data);
         setSuccess('API 키가 성공적으로 수정되었습니다!');
       } else {
+        console.log('=== API Key Create Request ===');
+        console.log('Form Data:', formData);
         await authAPI.createApiKey(formData);
         setSuccess('API 키가 성공적으로 추가되었습니다!');
       }
@@ -70,6 +88,7 @@ const ApiSettingsPage = () => {
       setEditingKey(null);
       loadApiKeys();
     } catch (err) {
+      console.error('API Key Save Error:', err);
       const errorMessage = err.response?.data?.message || 'API 키 저장에 실패했습니다';
       setError(errorMessage);
     } finally {
