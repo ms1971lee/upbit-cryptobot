@@ -206,7 +206,11 @@ const ApiSettingsPage = () => {
           {showForm && (
             <div className="api-form-section">
               <h3>{editingKey ? 'API 키 수정' : 'API 키 추가'}</h3>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} autoComplete="off">
+                {/* 브라우저 자동완성 방지용 더미 필드 */}
+                <input type="text" style={{display: 'none'}} />
+                <input type="password" style={{display: 'none'}} />
+
                 <div className="form-group">
                   <label htmlFor="name">API 키 이름 *</label>
                   <input
@@ -217,6 +221,7 @@ const ApiSettingsPage = () => {
                     onChange={handleChange}
                     required
                     placeholder="예: 메인 계좌, 테스트 계좌"
+                    autoComplete="off"
                   />
                 </div>
 
@@ -231,6 +236,8 @@ const ApiSettingsPage = () => {
                     required={!editingKey}
                     placeholder="업비트 API Access Key"
                     autoComplete="off"
+                    data-lpignore="true"
+                    data-form-type="other"
                   />
                 </div>
 
@@ -245,6 +252,8 @@ const ApiSettingsPage = () => {
                     required={!editingKey}
                     placeholder="업비트 API Secret Key"
                     autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
                   />
                 </div>
 
