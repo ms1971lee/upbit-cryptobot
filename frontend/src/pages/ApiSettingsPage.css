@@ -214,6 +214,22 @@
   border-color: #00d4ff;
 }
 
+.test-button {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #ffc107;
+}
+
+.test-button:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+}
+
+.test-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .delete-button {
   background: rgba(255, 71, 87, 0.1);
   border: 1px solid rgba(255, 71, 87, 0.4);

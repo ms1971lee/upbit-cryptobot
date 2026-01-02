@@ -162,6 +162,59 @@ public class UpbitApiService {
     }
 
     /**
+     * 특정 API 키로 계좌 조회 테스트 (인증 필요)
+     */
+    public Mono<Map<String, Object>> testApiKeyById(Long apiKeyId, Long userId) {
+        try {
+            // API 키 조회 (사용자 검증 포함)
+            ApiKey apiKey = apiKeyRepository.findByIdAndUserId(apiKeyId, userId)
+                    .orElseThrow(() -> new RuntimeException("API 키를 찾을 수 없습니다"));
+
+            // API 키 복호화
+            String accessKey = encryptionService.decrypt(apiKey.getAccessKey());
+            String secretKey = encryptionService.decrypt(apiKey.getSecretKey());
+
+            // JWT 토큰 생성
+            String authToken = generateUpbitJwtToken(accessKey, secretKey);
+
+            // 업비트 API 호출
+            WebClient webClient = webClientBuilder
+                    .baseUrl(upbitApiProperties.getBaseUrl())
+                    .build();
+
+            return webClient.get()
+                    .uri("/accounts")
+                    .header("Authorization", authToken)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .map(response -> {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("success", true);
+                        result.put("message", "API 키가 정상적으로 작동합니다");
+                        result.put("apiKeyName", apiKey.getName());
+                        result.put("accounts", response);
+                        return result;
+                    })
+                    .onErrorResume(error -> {
+                        log.error("API key test failed for id: {}", apiKeyId, error);
+                        Map<String, Object> errorResult = new HashMap<>();
+                        errorResult.put("success", false);
+                        errorResult.put("message", "API 키 테스트 실패");
+                        errorResult.put("error", error.getMessage());
+                        return Mono.just(errorResult);
+                    });
+
+        } catch (Exception e) {
+            log.error("Error testing API key: {}", apiKeyId, e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "API 키 테스트 중 오류 발생");
+            errorResult.put("error", e.getMessage());
+            return Mono.just(errorResult);
+        }
+    }
+
+    /**
      * 업비트 JWT 토큰 생성
      */
     private String generateUpbitJwtToken(String accessKey, String secretKey) {

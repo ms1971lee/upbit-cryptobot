@@ -50,7 +50,8 @@ export const authAPI = {
   createApiKey: (data) => apiClient.post('/api/api-keys', data),
   updateApiKey: (id, data) => apiClient.put(`/api/api-keys/${id}`, data),
   deleteApiKey: (id) => apiClient.delete(`/api/api-keys/${id}`),
-  activateApiKey: (id) => apiClient.post(`/api/api-keys/${id}/activate`)
+  activateApiKey: (id) => apiClient.post(`/api/api-keys/${id}/activate`),
+  testApiKey: (id) => apiClient.post(`/api/api-keys/${id}/test`)
 };
 
 export default apiClient;

@@ -3,15 +3,20 @@ package com.cryptobot.upbit.controller;
 import com.cryptobot.upbit.dto.apikey.ApiKeyDto;
 import com.cryptobot.upbit.dto.apikey.CreateApiKeyRequest;
 import com.cryptobot.upbit.dto.apikey.UpdateApiKeyRequest;
+import com.cryptobot.upbit.entity.User;
+import com.cryptobot.upbit.repository.UserRepository;
 import com.cryptobot.upbit.service.ApiKeyService;
+import com.cryptobot.upbit.service.UpbitApiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,6 +25,8 @@ import java.util.List;
 public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;
+    private final UpbitApiService upbitApiService;
+    private final UserRepository userRepository;
 
     /**
      * 모든 API 키 조회
@@ -106,5 +113,22 @@ public class ApiKeyController {
         ApiKeyDto apiKey = apiKeyService.activateApiKey(email, id);
 
         return ResponseEntity.ok(apiKey);
+    }
+
+    /**
+     * API 키 테스트 (업비트 계좌 조회)
+     */
+    @PostMapping("/{id}/test")
+    public Mono<ResponseEntity<Map<String, Object>>> testApiKey(
+            Authentication authentication,
+            @PathVariable Long id) {
+        String email = (String) authentication.getPrincipal();
+        log.info("Test API key request for user: {}, id: {}", email, id);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
+        return upbitApiService.testApiKeyById(id, user.getId())
+                .map(ResponseEntity::ok);
     }
 }

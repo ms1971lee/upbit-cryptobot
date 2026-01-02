@@ -104,6 +104,25 @@ const ApiSettingsPage = () => {
     }
   };
 
+  const handleTest = async (id) => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      const response = await authAPI.testApiKey(id);
+      if (response.data.success) {
+        setSuccess(`✅ ${response.data.message}\n계좌 정보가 정상적으로 조회되었습니다.`);
+      } else {
+        setError(`❌ ${response.data.message}: ${response.data.error}`);
+      }
+    } catch (err) {
+      setError('API 키 테스트에 실패했습니다: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setShowForm(false);
     setEditingKey(null);
@@ -265,6 +284,13 @@ const ApiSettingsPage = () => {
                               활성화
                             </button>
                           )}
+                          <button
+                            onClick={() => handleTest(apiKey.id)}
+                            className="test-button"
+                            disabled={loading}
+                          >
+                            테스트
+                          </button>
                           <button
                             onClick={() => handleEdit(apiKey)}
                             className="edit-button"
