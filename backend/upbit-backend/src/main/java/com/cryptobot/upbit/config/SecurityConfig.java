@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .frameOptions(frame -> frame.sameOrigin())
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/test", "/api/health", "/api/upbit/markets", "/h2-console/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/test", "/api/test/**", "/api/health", "/api/upbit/markets", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
