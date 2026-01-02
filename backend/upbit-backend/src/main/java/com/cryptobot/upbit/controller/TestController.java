@@ -40,9 +40,4 @@ public class TestController {
     public Mono<Map<String, Object>> testUpbitApi(@PathVariable String keyName) {
         return upbitApiService.testConnection(keyName);
     }
-
-    @GetMapping("/upbit/markets")
-    public Mono<Map<String, Object>> getMarkets() {
-        return upbitApiService.getMarketInfo();
-    }
 }
