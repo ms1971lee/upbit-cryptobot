@@ -46,6 +46,14 @@
   width: 100%;
 }
 
+/* 스캔 + 통계 행 (상단) */
+.scan-and-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
 /* 메인 컨텐츠 영역 */
 .trading-main-content {
   flex: 1;
@@ -56,10 +64,20 @@
 
 /* 우측 통계 영역 */
 .trading-stats {
-  width: 320px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* 반응형: 1200px 이하에서 세로 배치 */
+@media (max-width: 1200px) {
+  .scan-and-stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .trading-stats {
+    width: 100%;
+  }
 }
 
 .stat-card {

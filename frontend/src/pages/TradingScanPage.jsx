@@ -392,8 +392,8 @@ const TradingScanPage = () => {
         {/* 종목 스캔 탭 */}
         {activeTab === 'scan' && (
           <div className="tab-content">
-            {/* 메인 컨텐츠 영역 */}
-            <div className="trading-main-content">
+            {/* 상단: 종목 스캔 리스트 + 통계 카드 */}
+            <div className="scan-and-stats-row">
               {/* 종목 스캔 리스트 */}
               <div className="scan-section">
             <div className="section-header">
@@ -512,7 +512,45 @@ const TradingScanPage = () => {
             )}
           </div>
 
-          {/* 보유종목 리스트 */}
+          {/* 우측 통계 영역 */}
+          <div className="trading-stats">
+            {accountLoading ? (
+              <div className="stat-loading">
+                <div className="spinner"></div>
+                <span>로딩 중...</span>
+              </div>
+            ) : accountError ? (
+              <div className="stat-error">
+                <p>API 키를 등록해주세요</p>
+              </div>
+            ) : (
+              <>
+                <div className="stat-card">
+                  <div className="stat-label">총 매수금액</div>
+                  <div className="stat-value">{Math.round(stats.totalBuy).toLocaleString()}원</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">보유자산</div>
+                  <div className="stat-value">{Math.round(stats.totalAssets).toLocaleString()}원</div>
+                </div>
+                <div className={`stat-card ${stats.totalProfit >= 0 ? 'positive-card' : 'negative-card'}`}>
+                  <div className="stat-label">총평가수익</div>
+                  <div className={`stat-value ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
+                    {stats.totalProfit >= 0 ? '+' : ''}{Math.round(stats.totalProfit).toLocaleString()}원
+                  </div>
+                </div>
+                <div className={`stat-card ${stats.profitRate >= 0 ? 'positive-card' : 'negative-card'}`}>
+                  <div className="stat-label">총평가수익률</div>
+                  <div className={`stat-value ${stats.profitRate >= 0 ? 'positive' : 'negative'}`}>
+                    {stats.profitRate >= 0 ? '+' : ''}{stats.profitRate.toFixed(2)}%
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+          {/* 하단: 보유종목 리스트 */}
           <div className="holdings-section">
             <div className="section-header">
               <h2>보유종목 리스트</h2>
@@ -588,44 +626,6 @@ const TradingScanPage = () => {
               </div>
             )}
           </div>
-        </div>
-
-        {/* 우측 통계 영역 */}
-        <div className="trading-stats">
-          {accountLoading ? (
-            <div className="stat-loading">
-              <div className="spinner"></div>
-              <span>로딩 중...</span>
-            </div>
-          ) : accountError ? (
-            <div className="stat-error">
-              <p>API 키를 등록해주세요</p>
-            </div>
-          ) : (
-            <>
-              <div className="stat-card">
-                <div className="stat-label">총 매수금액</div>
-                <div className="stat-value">{Math.round(stats.totalBuy).toLocaleString()}원</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-label">보유자산</div>
-                <div className="stat-value">{Math.round(stats.totalAssets).toLocaleString()}원</div>
-              </div>
-              <div className={`stat-card ${stats.totalProfit >= 0 ? 'positive-card' : 'negative-card'}`}>
-                <div className="stat-label">총평가수익</div>
-                <div className={`stat-value ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
-                  {stats.totalProfit >= 0 ? '+' : ''}{Math.round(stats.totalProfit).toLocaleString()}원
-                </div>
-              </div>
-              <div className={`stat-card ${stats.profitRate >= 0 ? 'positive-card' : 'negative-card'}`}>
-                <div className="stat-label">총평가수익률</div>
-                <div className={`stat-value ${stats.profitRate >= 0 ? 'positive' : 'negative'}`}>
-                  {stats.profitRate >= 0 ? '+' : ''}{stats.profitRate.toFixed(2)}%
-                </div>
-              </div>
-            </>
-          )}
-        </div>
 
         {/* 매수/매도 모달 */}
         {orderModal.show && (
