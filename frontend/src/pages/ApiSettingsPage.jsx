@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api/authApi';
-import './DashboardPage.css';
+import MainLayout from '../components/layout/MainLayout';
 import './ApiSettingsPage.css';
 
 const ApiSettingsPage = () => {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
   const [apiKeys, setApiKeys] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingKey, setEditingKey] = useState(null);
@@ -171,22 +167,10 @@ const ApiSettingsPage = () => {
     setError('');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
-    <div className="api-settings-container">
-      <div className="dashboard-header">
-        <h1>Upbit Crypto Bot</h1>
-        <button onClick={handleLogout} className="logout-button">
-          로그아웃
-        </button>
-      </div>
-
-      <div className="api-settings-content">
-        <div className="api-settings-card">
+    <MainLayout>
+      <div className="api-settings-page">
+        <div className="api-settings-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
             <h2>API 키 관리</h2>
             {!showForm && (
@@ -385,15 +369,9 @@ const ApiSettingsPage = () => {
               </div>
             </>
           )}
-
-          <div className="auth-link" style={{ marginTop: '30px' }}>
-            <a href="/dashboard" onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
-              대시보드로 돌아가기
-            </a>
-          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

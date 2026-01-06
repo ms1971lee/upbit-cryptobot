@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { authAPI } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../components/layout/MainLayout';
 import './UserProfilePage.css';
 
 const UserProfilePage = () => {
@@ -133,15 +134,9 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <h1>프로필 설정</h1>
-        <button onClick={() => navigate('/dashboard')} className="back-button">
-          대시보드로 돌아가기
-        </button>
-      </div>
-
-      <div className="profile-content">
+    <MainLayout>
+      <div className="profile-page">
+        <div className="profile-content">
         {/* 프로필 정보 수정 */}
         <div className="profile-section">
           <h2>프로필 정보</h2>
@@ -263,8 +258,9 @@ const UserProfilePage = () => {
             </button>
           </form>
         </div>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

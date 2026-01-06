@@ -1,135 +1,413 @@
-.dashboard-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-  background-attachment: fixed;
+.dashboard-page {
+  width: 100%;
 }
 
-.dashboard-header {
-  background: rgba(26, 31, 58, 0.8);
-  backdrop-filter: blur(10px);
-  color: #e8eaf6;
-  padding: 20px 40px;
+/* 탭 메뉴 */
+.dashboard-tabs {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1),
-              0 0 1px rgba(0, 212, 255, 0.3);
-  border-bottom: 1px solid rgba(94, 96, 206, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  gap: 0;
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+  margin-bottom: 30px;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #00d4ff, #5e60ce);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-}
-
-.logout-button {
-  padding: 10px 20px;
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid rgba(0, 212, 255, 0.4);
-  color: #00d4ff;
-  border-radius: 8px;
+.tab-btn {
+  padding: 15px 40px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.logout-button:hover {
-  background: rgba(0, 212, 255, 0.2);
-  border-color: #00d4ff;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+.tab-btn:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tab-btn.active {
+  color: #00d4ff;
+  border-bottom-color: #00d4ff;
+  font-weight: 600;
+  background: rgba(0, 212, 255, 0.05);
+}
+
+/* 대시보드 그리드 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 보유자산 & 투자수익 카드 */
+.info-card,
+.profit-card {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.info-card:hover,
+.profit-card:hover {
+  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.4);
   transform: translateY(-2px);
 }
 
-.logout-button:active {
-  transform: translateY(0);
+.info-row,
+.profit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(94, 96, 206, 0.2);
 }
 
-.dashboard-content {
-  padding: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+.info-row:last-child,
+.profit-row:last-child {
+  border-bottom: none;
 }
 
-.user-info-card,
-.welcome-card {
-  background: rgba(26, 31, 58, 0.9);
+.info-label,
+.profit-label {
+  color: #b8bfd8;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.info-value,
+.profit-value {
+  color: #e8eaf6;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.unit {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.negative {
+  color: #ff6b81 !important;
+}
+
+.positive {
+  color: #10b981 !important;
+}
+
+/* 차트 카드 */
+.chart-card {
+  background: rgba(26, 31, 58, 0.6);
   backdrop-filter: blur(10px);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1),
-              0 0 1px rgba(0, 212, 255, 0.3);
-  border: 1px solid rgba(94, 96, 206, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+  height: 100%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
-.user-info-card:hover,
-.welcome-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2),
-              0 0 2px rgba(0, 212, 255, 0.5);
-  transform: translateY(-4px);
+.chart-card:hover {
+  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.4);
+  transform: translateY(-2px);
 }
 
-.user-info-card h2,
-.welcome-card h2 {
-  margin: 0 0 20px 0;
-  color: #e8eaf6;
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #00d4ff, #5e60ce);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
-  padding-bottom: 10px;
-}
-
-.info-row {
+.chart-header {
   display: flex;
   justify-content: space-between;
-  padding: 14px 0;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(94, 96, 206, 0.2);
+  color: #e8eaf6;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #00d4ff;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00d4ff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.pie-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  position: relative;
+}
+
+.pie-chart-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 차트 호버 시 글로우 효과 */
+.recharts-pie-sector {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.recharts-pie-sector:hover {
+  filter: brightness(1.2);
+}
+
+/* 범례 스타일 개선 */
+.recharts-legend-wrapper {
+  margin-top: 10px;
+}
+
+.recharts-legend-item {
+  margin: 0 15px !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.recharts-legend-item:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+/* 툴팁 애니메이션 */
+.recharts-tooltip-wrapper {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 보유자산 목록 */
+.assets-table-section {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.table-header h3 {
+  margin: 0;
+  color: #e8eaf6;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.deposit-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #5e60ce 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(94, 96, 206, 0.3);
+}
+
+.deposit-btn:hover {
+  background: linear-gradient(135deg, #4a4db7 0%, #7c3aed 100%);
+  box-shadow: 0 6px 20px rgba(94, 96, 206, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 테이블 */
+.assets-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.assets-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assets-table thead {
+  background: rgba(94, 96, 206, 0.2);
+  border-top: 2px solid rgba(0, 212, 255, 0.3);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+}
+
+.assets-table th {
+  padding: 12px 15px;
+  text-align: left;
+  color: #b8bfd8;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.assets-table tbody tr {
   border-bottom: 1px solid rgba(94, 96, 206, 0.15);
   transition: all 0.2s ease;
 }
 
-.info-row:hover {
+.assets-table tbody tr:hover {
   background: rgba(0, 212, 255, 0.05);
-  margin: 0 -10px;
-  padding: 14px 10px;
-  border-radius: 8px;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.1);
 }
 
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-row .label {
-  font-weight: 600;
-  color: #b8bfd8;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-}
-
-.info-row .value {
+.assets-table td {
+  padding: 15px;
   color: #e8eaf6;
-  font-weight: 500;
+  font-size: 14px;
 }
 
-.welcome-card p {
+.coin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coin-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 50%;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.coin-name {
+  font-weight: 600;
+  color: #e8eaf6;
+  margin-bottom: 2px;
+}
+
+.coin-symbol {
+  font-size: 12px;
   color: #b8bfd8;
-  line-height: 1.8;
-  margin: 10px 0;
-  font-size: 15px;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #b8bfd8;
+  margin-top: 4px;
+}
+
+.unit-small {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.order-btn {
+  padding: 6px 16px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  color: #a78bfa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.order-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: #8b5cf6;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+/* 빈 상태 */
+.empty-state {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 80px 40px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.empty-state p {
+  color: #b8bfd8;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 반응형 */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-tabs {
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .assets-table {
+    font-size: 12px;
+  }
+
+  .assets-table th,
+  .assets-table td {
+    padding: 10px 8px;
+  }
 }

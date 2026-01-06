@@ -5,6 +5,8 @@ import { PrivateRoute } from './components/common/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
+import TradingScanPage from './pages/TradingScanPage';
+import SettingsPage from './pages/SettingsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import ApiSettingsPage from './pages/ApiSettingsPage';
 
@@ -24,7 +26,23 @@ function App() {
             }
           />
           <Route
-            path="/profile"
+            path="/trading-scan"
+            element={
+              <PrivateRoute>
+                <TradingScanPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <SettingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile-edit"
             element={
               <PrivateRoute>
                 <UserProfilePage />
@@ -32,7 +50,7 @@ function App() {
             }
           />
           <Route
-            path="/api-settings"
+            path="/api-keys"
             element={
               <PrivateRoute>
                 <ApiSettingsPage />
