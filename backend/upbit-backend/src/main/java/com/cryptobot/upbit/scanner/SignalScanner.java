@@ -55,8 +55,10 @@ public class SignalScanner {
 
         List<SignalScanResult> results = new ArrayList<>();
 
-        // 각 마켓별로 스캔 (최대 20개만 테스트)
-        int limit = Math.min(markets.size(), 20);
+        // 전체 마켓 스캔
+        int limit = markets.size();
+        log.info("Scanning {} markets...", limit);
+
         for (int i = 0; i < limit; i++) {
             UpbitMarketResponse market = markets.get(i);
             try {
@@ -65,6 +67,16 @@ public class SignalScanner {
                     results.add(result);
                     log.info("Signal found for {}: {}", market.getMarket(), result.getSignal());
                 }
+
+                // API rate limit 회피 (10 requests/sec)
+                if ((i + 1) % 10 == 0 && i < limit - 1) {
+                    Thread.sleep(1000);
+                    log.debug("Rate limit pause after {} markets", i + 1);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Scan interrupted");
+                break;
             } catch (Exception e) {
                 log.error("Error scanning market {}: {}", market.getMarket(), e.getMessage());
             }
