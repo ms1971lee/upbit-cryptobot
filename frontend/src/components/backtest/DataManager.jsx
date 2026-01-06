@@ -21,15 +21,9 @@ const DataManager = () => {
   const [syncHistory, setSyncHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  // 수집된 데이터 (실제 DB에 있는 캔들 데이터)
-  const [availableData, setAvailableData] = useState([]);
-  const [dataLoading, setDataLoading] = useState(false);
-  const [selectedMarket, setSelectedMarket] = useState('ALL');
-
-  // 컴포넌트 마운트 시 데이터 조회
+  // 컴포넌트 마운트 시 수집 이력 조회
   useEffect(() => {
     loadSyncHistory();
-    loadAvailableData();
   }, []);
 
   // 수집 진행 중일 때 폴링
@@ -46,7 +40,6 @@ const DataManager = () => {
           setSyncTaskId(null);
           setSyncError('');
           loadSyncHistory(); // 수집 이력 새로고침
-          loadAvailableData(); // 수집된 데이터 새로고침
         } else if (status.status === 'FAILED') {
           setSyncing(false);
           setSyncTaskId(null);
@@ -66,6 +59,7 @@ const DataManager = () => {
     setHistoryLoading(true);
     try {
       const response = await backtestApi.getSyncHistory();
+      console.log('수집 이력 응답:', response);
       if (response.success) {
         setSyncHistory(response.histories || []);
       }
@@ -73,21 +67,6 @@ const DataManager = () => {
       console.error('수집 이력 조회 실패:', error);
     } finally {
       setHistoryLoading(false);
-    }
-  };
-
-  // 수집된 데이터 로드 (실제 DB에 저장된 캔들 데이터)
-  const loadAvailableData = async () => {
-    setDataLoading(true);
-    try {
-      const response = await backtestApi.getAvailableData();
-      if (response.success) {
-        setAvailableData(response.markets || []);
-      }
-    } catch (error) {
-      console.error('수집된 데이터 조회 실패:', error);
-    } finally {
-      setDataLoading(false);
     }
   };
 
@@ -133,26 +112,16 @@ const DataManager = () => {
     }
   };
 
-  // 날짜 포맷
+  // 날짜 포맷 (날짜만)
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleString('ko-KR', {
+    return date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit'
     });
   };
-
-  // 수집된 마켓 목록 추출 (중복 제거)
-  const availableMarkets = ['ALL', ...new Set(availableData.map(d => d.market))];
-
-  // 마켓 필터링된 데이터
-  const filteredData = selectedMarket === 'ALL'
-    ? availableData
-    : availableData.filter(d => d.market === selectedMarket);
 
   return (
     <div className="data-manager">
@@ -267,71 +236,6 @@ const DataManager = () => {
         )}
       </div>
 
-      {/* 수집된 데이터 (실제 DB에 저장된 데이터) */}
-      <div className="available-data-section">
-        <div className="section-header">
-          <h3>수집된 데이터</h3>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <select
-              value={selectedMarket}
-              onChange={(e) => setSelectedMarket(e.target.value)}
-              className="form-select"
-              style={{ minWidth: '150px' }}
-            >
-              {availableMarkets.map((market) => (
-                <option key={market} value={market}>
-                  {market === 'ALL' ? '전체' : market}
-                </option>
-              ))}
-            </select>
-            <button
-              className="refresh-btn"
-              onClick={loadAvailableData}
-              disabled={dataLoading}
-            >
-              {dataLoading ? '로딩 중...' : '새로고침'}
-            </button>
-          </div>
-        </div>
-
-        {dataLoading ? (
-          <div className="data-loading">
-            <div className="spinner"></div>
-            <span>수집된 데이터 조회 중...</span>
-          </div>
-        ) : filteredData.length === 0 ? (
-          <div className="data-empty">
-            <p>수집된 데이터가 없습니다.</p>
-            <small>위 폼에서 데이터를 수집해주세요.</small>
-          </div>
-        ) : (
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>마켓</th>
-                  <th>타임프레임</th>
-                  <th>시작일</th>
-                  <th>종료일</th>
-                  <th>레코드 수</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((data, index) => (
-                  <tr key={index}>
-                    <td className="market-cell">{data.market}</td>
-                    <td>{data.timeframe}</td>
-                    <td className="date-cell">{formatDate(data.startDate)}</td>
-                    <td className="date-cell">{formatDate(data.endDate)}</td>
-                    <td className="count-cell">{data.recordCount?.toLocaleString() || 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
       {/* 데이터 수집 이력 */}
       <div className="available-data-section">
         <div className="section-header">
@@ -360,29 +264,17 @@ const DataManager = () => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>마켓</th>
-                  <th>타임프레임</th>
+                  <th>종목</th>
                   <th>수집 기간</th>
-                  <th>레코드 수</th>
-                  <th>상태</th>
-                  <th>수집 시각</th>
+                  <th>수집일</th>
                 </tr>
               </thead>
               <tbody>
                 {syncHistory.map((history, index) => (
                   <tr key={index}>
                     <td className="market-cell">{history.market}</td>
-                    <td>{history.timeframe}</td>
                     <td className="date-cell">
                       {history.startDate} ~ {history.endDate}
-                    </td>
-                    <td className="count-cell">{history.recordCount?.toLocaleString() || 0}</td>
-                    <td>
-                      <span className={`status-badge status-${history.status?.toLowerCase()}`}>
-                        {history.status === 'COMPLETED' ? '완료' :
-                         history.status === 'IN_PROGRESS' ? '진행중' :
-                         history.status === 'FAILED' ? '실패' : history.status}
-                      </span>
                     </td>
                     <td className="date-cell">{formatDate(history.createdAt)}</td>
                   </tr>
