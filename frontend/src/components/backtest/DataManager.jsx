@@ -265,6 +265,7 @@ const DataManager = () => {
               <thead>
                 <tr>
                   <th>종목</th>
+                  <th>타임프레임</th>
                   <th>수집 기간</th>
                   <th>수집일</th>
                 </tr>
@@ -273,6 +274,7 @@ const DataManager = () => {
                 {syncHistory.map((history, index) => (
                   <tr key={index}>
                     <td className="market-cell">{history.market}</td>
+                    <td>{history.timeframe}</td>
                     <td className="date-cell">
                       {history.startDate} ~ {history.endDate}
                     </td>
