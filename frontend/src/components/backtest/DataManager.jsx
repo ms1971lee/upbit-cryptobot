@@ -17,13 +17,13 @@ const DataManager = () => {
   const [syncStatus, setSyncStatus] = useState(null);
   const [syncError, setSyncError] = useState('');
 
-  // 사용 가능한 데이터
-  const [availableData, setAvailableData] = useState([]);
-  const [dataLoading, setDataLoading] = useState(false);
+  // 데이터 수집 이력
+  const [syncHistory, setSyncHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
-  // 컴포넌트 마운트 시 사용 가능한 데이터 조회
+  // 컴포넌트 마운트 시 수집 이력 조회
   useEffect(() => {
-    loadAvailableData();
+    loadSyncHistory();
   }, []);
 
   // 수집 진행 중일 때 폴링
@@ -39,11 +39,12 @@ const DataManager = () => {
           setSyncing(false);
           setSyncTaskId(null);
           setSyncError('');
-          loadAvailableData(); // 데이터 목록 새로고침
+          loadSyncHistory(); // 수집 이력 새로고침
         } else if (status.status === 'FAILED') {
           setSyncing(false);
           setSyncTaskId(null);
           setSyncError(status.message || '데이터 수집 실패');
+          loadSyncHistory(); // 실패해도 이력 갱신
         }
       } catch (error) {
         console.error('수집 상태 조회 실패:', error);
@@ -53,18 +54,18 @@ const DataManager = () => {
     return () => clearInterval(interval);
   }, [syncTaskId, syncing]);
 
-  // 사용 가능한 데이터 목록 로드
-  const loadAvailableData = async () => {
-    setDataLoading(true);
+  // 데이터 수집 이력 로드
+  const loadSyncHistory = async () => {
+    setHistoryLoading(true);
     try {
-      const response = await backtestApi.getAvailableData();
+      const response = await backtestApi.getSyncHistory();
       if (response.success) {
-        setAvailableData(response.markets || []);
+        setSyncHistory(response.histories || []);
       }
     } catch (error) {
-      console.error('데이터 목록 조회 실패:', error);
+      console.error('수집 이력 조회 실패:', error);
     } finally {
-      setDataLoading(false);
+      setHistoryLoading(false);
     }
   };
 
@@ -236,27 +237,27 @@ const DataManager = () => {
         )}
       </div>
 
-      {/* 사용 가능한 데이터 목록 */}
+      {/* 데이터 수집 이력 */}
       <div className="available-data-section">
         <div className="section-header">
-          <h3>사용 가능한 데이터</h3>
+          <h3>데이터 수집 이력</h3>
           <button
             className="refresh-btn"
-            onClick={loadAvailableData}
-            disabled={dataLoading}
+            onClick={loadSyncHistory}
+            disabled={historyLoading}
           >
-            {dataLoading ? '로딩 중...' : '새로고침'}
+            {historyLoading ? '로딩 중...' : '새로고침'}
           </button>
         </div>
 
-        {dataLoading ? (
+        {historyLoading ? (
           <div className="data-loading">
             <div className="spinner"></div>
-            <span>데이터 목록 조회 중...</span>
+            <span>수집 이력 조회 중...</span>
           </div>
-        ) : availableData.length === 0 ? (
+        ) : syncHistory.length === 0 ? (
           <div className="data-empty">
-            <p>수집된 데이터가 없습니다.</p>
+            <p>수집 이력이 없습니다.</p>
             <small>위 폼에서 데이터를 수집해주세요.</small>
           </div>
         ) : (
@@ -266,19 +267,29 @@ const DataManager = () => {
                 <tr>
                   <th>마켓</th>
                   <th>타임프레임</th>
-                  <th>시작일</th>
-                  <th>종료일</th>
+                  <th>수집 기간</th>
                   <th>레코드 수</th>
+                  <th>상태</th>
+                  <th>수집 시각</th>
                 </tr>
               </thead>
               <tbody>
-                {availableData.map((data, index) => (
+                {syncHistory.map((history, index) => (
                   <tr key={index}>
-                    <td className="market-cell">{data.market}</td>
-                    <td>{data.timeframe}</td>
-                    <td className="date-cell">{formatDate(data.startDate)}</td>
-                    <td className="date-cell">{formatDate(data.endDate)}</td>
-                    <td className="count-cell">{data.recordCount?.toLocaleString() || 0}</td>
+                    <td className="market-cell">{history.market}</td>
+                    <td>{history.timeframe}</td>
+                    <td className="date-cell">
+                      {history.startDate} ~ {history.endDate}
+                    </td>
+                    <td className="count-cell">{history.recordCount?.toLocaleString() || 0}</td>
+                    <td>
+                      <span className={`status-badge status-${history.status?.toLowerCase()}`}>
+                        {history.status === 'COMPLETED' ? '완료' :
+                         history.status === 'IN_PROGRESS' ? '진행중' :
+                         history.status === 'FAILED' ? '실패' : history.status}
+                      </span>
+                    </td>
+                    <td className="date-cell">{formatDate(history.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

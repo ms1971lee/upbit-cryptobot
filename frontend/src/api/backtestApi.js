@@ -177,6 +177,22 @@ const backtestApi = {
   },
 
   /**
+   * 데이터 수집 이력 조회
+   * GET /api/backtest/data/history
+   *
+   * @returns {Promise} 데이터 수집 이력 목록
+   */
+  getSyncHistory: async () => {
+    try {
+      const response = await api.get('/api/backtest/data/history');
+      return response.data;
+    } catch (error) {
+      console.error('데이터 수집 이력 조회 실패:', error);
+      throw error;
+    }
+  },
+
+  /**
    * 사용 가능한 데이터 목록 조회
    * GET /api/backtest/data/available
    *

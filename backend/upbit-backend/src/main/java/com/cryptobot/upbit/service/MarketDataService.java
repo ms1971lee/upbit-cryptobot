@@ -31,6 +31,7 @@ public class MarketDataService {
 
     private final MarketCandleRepository candleRepository;
     private final WebClient.Builder webClientBuilder;
+    private final DataSyncHistoryService dataSyncHistoryService;
 
     // 동기화 작업 상태 관리
     private final Map<String, DataSyncStatus> syncTasks = new ConcurrentHashMap<>();
@@ -61,11 +62,17 @@ public class MarketDataService {
             updateTaskStatus(taskId, "COMPLETED", 100.0, candles.size(), estimatedRecords,
                     "데이터 수집 완료: " + candles.size() + "개");
 
+            // 수집 이력 완료 처리
+            dataSyncHistoryService.completeHistory(taskId, candles.size());
+
             log.info("Data sync completed for {}-{}: {} records", market, timeframe, candles.size());
 
         } catch (Exception e) {
             log.error("Data sync failed for {}-{}", market, timeframe, e);
             updateTaskStatus(taskId, "FAILED", 0.0, 0, 0, "오류: " + e.getMessage());
+
+            // 수집 이력 실패 처리
+            dataSyncHistoryService.failHistory(taskId, e.getMessage());
         }
 
         return CompletableFuture.completedFuture(null);

@@ -1,11 +1,15 @@
 package com.cryptobot.upbit.controller;
 
 import com.cryptobot.upbit.dto.backtest.*;
+import com.cryptobot.upbit.entity.User;
+import com.cryptobot.upbit.repository.UserRepository;
+import com.cryptobot.upbit.service.DataSyncHistoryService;
 import com.cryptobot.upbit.service.MarketDataService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,15 +29,23 @@ import java.util.UUID;
 public class BacktestDataController {
 
     private final MarketDataService marketDataService;
+    private final DataSyncHistoryService dataSyncHistoryService;
+    private final UserRepository userRepository;
 
     /**
      * 과거 캔들 데이터 동기화 시작
      */
     @PostMapping("/sync")
-    public ResponseEntity<DataSyncResponse> syncData(@Valid @RequestBody DataSyncRequest request) {
+    public ResponseEntity<DataSyncResponse> syncData(@Valid @RequestBody DataSyncRequest request,
+                                                      Authentication authentication) {
         log.info("Data sync request: {}", request);
 
         try {
+            // 현재 사용자 조회
+            String email = (String) authentication.getPrincipal();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
             // 날짜 파싱
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
@@ -41,6 +53,10 @@ public class BacktestDataController {
 
             // Task ID 생성
             String taskId = "sync-" + UUID.randomUUID().toString().substring(0, 8);
+
+            // 수집 이력 생성
+            dataSyncHistoryService.createHistory(user, request.getMarket(), request.getTimeframe(),
+                    startDate, endDate, taskId);
 
             // 예상 레코드 수 계산
             int estimatedRecords = estimateRecordCount(request.getTimeframe(), startDate, endDate);
@@ -81,7 +97,38 @@ public class BacktestDataController {
     }
 
     /**
-     * 사용 가능한 시장 데이터 목록 조회
+     * 데이터 수집 이력 조회
+     */
+    @GetMapping("/history")
+    public ResponseEntity<Map<String, Object>> getSyncHistory(Authentication authentication) {
+        log.info("Get data sync history request");
+
+        try {
+            // 현재 사용자 조회
+            String email = (String) authentication.getPrincipal();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
+            List<com.cryptobot.upbit.entity.DataSyncHistory> histories =
+                    dataSyncHistoryService.getHistoryByUser(user.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("histories", histories);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Failed to get sync history", e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "이력 조회 실패: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    /**
+     * 사용 가능한 시장 데이터 목록 조회 (하위 호환성 유지)
      */
     @GetMapping("/available")
     public ResponseEntity<Map<String, Object>> getAvailableData() {
