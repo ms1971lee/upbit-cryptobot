@@ -3,10 +3,12 @@ spring:
     name: upbit-cryptobot
   
   datasource:
-    url: jdbc:h2:file:./data/upbit-cryptobot
+    url: jdbc:h2:file:./data/upbit-cryptobot;MODE=LEGACY;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
     username: sa
     password:
     driver-class-name: org.h2.Driver
+    hikari:
+      connection-test-query: SELECT 1
   
   jpa:
     hibernate:

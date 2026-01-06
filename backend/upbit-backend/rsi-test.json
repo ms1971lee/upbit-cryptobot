@@ -1,0 +1,14 @@
+{
+  "name": "RSI Test v3",
+  "market": "KRW-BTC",
+  "timeframe": "1h",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-07",
+  "initialCapital": 10000000,
+  "strategyName": "RSI",
+  "strategyParams": {
+    "period": 14,
+    "oversoldLevel": 30,
+    "overboughtLevel": 70
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Bollinger Bands Test",
+  "market": "KRW-BTC",
+  "timeframe": "1h",
+  "startDate": "2025-01-01",
+  "endDate": "2025-01-07",
+  "initialCapital": 10000000,
+  "strategyName": "BOLLINGER_BANDS",
+  "strategyParams": {
+    "period": 20,
+    "stdDevMultiplier": 2.0
+  }
+}

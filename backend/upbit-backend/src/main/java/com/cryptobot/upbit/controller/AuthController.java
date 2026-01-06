@@ -52,6 +52,11 @@ public class AuthController {
      */
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            log.error("Authentication is null or principal is null");
+            return ResponseEntity.status(401).build();
+        }
+
         String email = (String) authentication.getPrincipal();
 
         log.info("Get current user request for email: {}", email);

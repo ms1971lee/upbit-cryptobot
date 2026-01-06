@@ -223,6 +223,223 @@ public class UpbitApiService {
     }
 
     /**
+     * 계좌 요약 정보 조회 (총매수금액, 보유자산, 총평가금액, 총평가수익률)
+     */
+    public Mono<Map<String, Object>> getAccountSummary(Long userId) {
+        try {
+            // 사용자의 활성화된 API 키 조회
+            ApiKey apiKey = apiKeyRepository.findByUserIdAndIsActiveTrue(userId)
+                    .orElseThrow(() -> new RuntimeException("활성화된 API 키를 찾을 수 없습니다"));
+
+            // API 키 복호화
+            String accessKey = encryptionService.decrypt(apiKey.getAccessKey());
+            String secretKey = encryptionService.decrypt(apiKey.getSecretKey());
+
+            // JWT 토큰 생성
+            String authToken = generateUpbitJwtToken(accessKey, secretKey);
+
+            // 업비트 API 호출
+            WebClient webClient = webClientBuilder
+                    .baseUrl(upbitApiProperties.getBaseUrl())
+                    .build();
+
+            return webClient.get()
+                    .uri("/accounts")
+                    .header("Authorization", authToken)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .flatMap(accountsJson -> {
+                        try {
+                            // JSON 파싱
+                            com.fasterxml.jackson.databind.ObjectMapper objectMapper =
+                                new com.fasterxml.jackson.databind.ObjectMapper();
+                            java.util.List<java.util.Map<String, Object>> accounts =
+                                objectMapper.readValue(accountsJson,
+                                    new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+
+                            // 보유 종목 정보 수집 및 현재가 조회
+                            return calculateAccountSummary(accounts, webClient);
+
+                        } catch (Exception e) {
+                            log.error("Failed to parse accounts JSON", e);
+                            Map<String, Object> errorResult = new HashMap<>();
+                            errorResult.put("success", false);
+                            errorResult.put("error", "계좌 정보 파싱 실패: " + e.getMessage());
+                            return Mono.just(errorResult);
+                        }
+                    })
+                    .onErrorResume(error -> {
+                        log.error("Failed to get account summary for user: {}", userId, error);
+                        Map<String, Object> errorResult = new HashMap<>();
+                        errorResult.put("success", false);
+                        errorResult.put("error", error.getMessage());
+                        return Mono.just(errorResult);
+                    });
+
+        } catch (Exception e) {
+            log.error("Error getting account summary for user: {}", userId, e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("error", e.getMessage());
+            return Mono.just(errorResult);
+        }
+    }
+
+    /**
+     * 계좌 정보로부터 요약 정보 계산
+     */
+    private Mono<Map<String, Object>> calculateAccountSummary(
+            java.util.List<java.util.Map<String, Object>> accounts,
+            WebClient webClient) {
+
+        java.util.List<Mono<Map<String, Object>>> coinMonos = new java.util.ArrayList<>();
+        double totalBuyAmount = 0.0;
+        double totalKRW = 0.0;
+
+        for (java.util.Map<String, Object> account : accounts) {
+            String currency = (String) account.get("currency");
+            String balance = (String) account.get("balance");
+            String avgBuyPrice = (String) account.get("avg_buy_price");
+
+            double balanceAmount = Double.parseDouble(balance);
+            double avgBuyPriceAmount = Double.parseDouble(avgBuyPrice);
+
+            if ("KRW".equals(currency)) {
+                totalKRW = balanceAmount;
+                continue;
+            }
+
+            if (balanceAmount > 0) {
+                String market = "KRW-" + currency;
+                double buyAmount = balanceAmount * avgBuyPriceAmount;
+                totalBuyAmount += buyAmount;
+
+                // 현재가 조회를 위한 Mono 생성
+                Mono<Map<String, Object>> coinMono = webClient.get()
+                        .uri("/ticker?markets=" + market)
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .map(tickerJson -> {
+                            try {
+                                com.fasterxml.jackson.databind.ObjectMapper objectMapper =
+                                    new com.fasterxml.jackson.databind.ObjectMapper();
+                                java.util.List<java.util.Map<String, Object>> tickers =
+                                    objectMapper.readValue(tickerJson,
+                                        new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+
+                                if (!tickers.isEmpty()) {
+                                    java.util.Map<String, Object> ticker = tickers.get(0);
+                                    double currentPrice = ((Number) ticker.get("trade_price")).doubleValue();
+                                    double evalAmount = balanceAmount * currentPrice;
+                                    double profitAmount = evalAmount - buyAmount;
+                                    double profitRate = (profitAmount / buyAmount) * 100;
+
+                                    java.util.Map<String, Object> coinData = new java.util.HashMap<>();
+                                    coinData.put("currency", currency);
+                                    coinData.put("market", market);
+                                    coinData.put("balance", balanceAmount);
+                                    coinData.put("avgBuyPrice", avgBuyPriceAmount);
+                                    coinData.put("currentPrice", currentPrice);
+                                    coinData.put("buyAmount", buyAmount);
+                                    coinData.put("evalAmount", evalAmount);
+                                    coinData.put("profitAmount", profitAmount);
+                                    coinData.put("profitRate", profitRate);
+                                    coinData.put("koreanName", ticker.get("korean_name"));
+
+                                    return coinData;
+                                }
+                            } catch (Exception e) {
+                                log.error("Failed to parse ticker for {}", market, e);
+                            }
+                            return new java.util.HashMap<String, Object>();
+                        })
+                        .onErrorResume(error -> {
+                            log.error("Failed to get ticker for {}", market, error);
+                            return Mono.just(new java.util.HashMap<>());
+                        });
+
+                coinMonos.add(coinMono);
+            }
+        }
+
+        final double finalTotalBuyAmount = totalBuyAmount;
+        final double finalTotalKRW = totalKRW;
+
+        // 모든 코인의 현재가 조회를 병렬로 실행
+        return reactor.core.publisher.Flux.merge(coinMonos)
+                .collectList()
+                .map(coinDataList -> {
+                    // 빈 맵 제거
+                    java.util.List<java.util.Map<String, Object>> validCoins = coinDataList.stream()
+                            .filter(coin -> !coin.isEmpty())
+                            .collect(java.util.stream.Collectors.toList());
+
+                    // 총 평가금액 계산
+                    double totalEvalAmount = validCoins.stream()
+                            .mapToDouble(coin -> (Double) coin.get("evalAmount"))
+                            .sum();
+
+                    // 총 보유자산 = KRW + 총 평가금액
+                    double totalAssets = finalTotalKRW + totalEvalAmount;
+
+                    // 총 평가수익
+                    double totalProfit = totalEvalAmount - finalTotalBuyAmount;
+
+                    // 총 평가수익률
+                    double totalProfitRate = finalTotalBuyAmount > 0
+                            ? (totalProfit / finalTotalBuyAmount) * 100
+                            : 0.0;
+
+                    java.util.Map<String, Object> summary = new java.util.HashMap<>();
+                    summary.put("success", true);
+                    summary.put("totalBuyAmount", finalTotalBuyAmount);
+                    summary.put("totalKRW", finalTotalKRW);
+                    summary.put("totalEvalAmount", totalEvalAmount);
+                    summary.put("totalAssets", totalAssets);
+                    summary.put("totalProfit", totalProfit);
+                    summary.put("totalProfitRate", totalProfitRate);
+                    summary.put("holdings", validCoins);
+
+                    return summary;
+                });
+    }
+
+    /**
+     * 특정 마켓의 현재가 조회 (공개 API, 인증 불필요)
+     */
+    public Mono<Double> getCurrentPrice(String market) {
+        WebClient webClient = webClientBuilder
+                .baseUrl(upbitApiProperties.getBaseUrl())
+                .build();
+
+        return webClient.get()
+                .uri("/ticker?markets=" + market)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(tickerJson -> {
+                    try {
+                        com.fasterxml.jackson.databind.ObjectMapper objectMapper =
+                                new com.fasterxml.jackson.databind.ObjectMapper();
+                        java.util.List<java.util.Map<String, Object>> tickers =
+                                objectMapper.readValue(tickerJson,
+                                        new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+
+                        if (!tickers.isEmpty()) {
+                            java.util.Map<String, Object> ticker = tickers.get(0);
+                            return ((Number) ticker.get("trade_price")).doubleValue();
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to parse ticker for {}", market, e);
+                    }
+                    return 0.0;
+                })
+                .onErrorResume(error -> {
+                    log.error("Failed to get current price for {}", market, error);
+                    return Mono.just(0.0);
+                });
+    }
+
+    /**
      * 업비트 JWT 토큰 생성
      */
     private String generateUpbitJwtToken(String accessKey, String secretKey) {
