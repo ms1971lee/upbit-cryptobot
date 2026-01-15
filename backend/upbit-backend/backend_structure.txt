@@ -1,0 +1,184 @@
+폴더 PATH의 목록입니다.
+볼륨 일련 번호는 F48D-CD59입니다.
+C:\WORKSPACE\UPBIT-CRYPTOBOT\BACKEND\UPBIT-BACKEND\SRC
+├─main
+│  ├─java
+│  │  └─com
+│  │      └─cryptobot
+│  │          └─upbit
+│  │              │  UpbitBackendApplication.java
+│  │              │  
+│  │              ├─common
+│  │              │  └─dto
+│  │              │          ApiResponse.java
+│  │              │          
+│  │              ├─config
+│  │              │      JpaConfig.java
+│  │              │      JwtProperties.java
+│  │              │      SecurityConfig.java
+│  │              │      UpbitApiProperties.java
+│  │              │      
+│  │              ├─controller
+│  │              │      AccountController.java
+│  │              │      ApiKeyController.java
+│  │              │      AuthController.java
+│  │              │      BacktestController.java
+│  │              │      BacktestDataController.java
+│  │              │      TestController.java
+│  │              │      TradingController.java
+│  │              │      UpbitApiController.java
+│  │              │      
+│  │              ├─domain
+│  │              │  └─candle
+│  │              │          Candle.java
+│  │              │          
+│  │              ├─dto
+│  │              │  ├─apikey
+│  │              │  │      ApiKeyDto.java
+│  │              │  │      CreateApiKeyRequest.java
+│  │              │  │      UpdateApiKeyRequest.java
+│  │              │  │      
+│  │              │  ├─auth
+│  │              │  │      AuthResponse.java
+│  │              │  │      ChangePasswordRequest.java
+│  │              │  │      LoginRequest.java
+│  │              │  │      SignupRequest.java
+│  │              │  │      UpdateApiKeyRequest.java
+│  │              │  │      UpdateProfileRequest.java
+│  │              │  │      UserDto.java
+│  │              │  │      
+│  │              │  ├─backtest
+│  │              │  │      AvailableMarketData.java
+│  │              │  │      CandleDto.java
+│  │              │  │      DataSyncRequest.java
+│  │              │  │      DataSyncResponse.java
+│  │              │  │      DataSyncStatus.java
+│  │              │  │      
+│  │              │  └─trading
+│  │              │          OrderRequest.java
+│  │              │          
+│  │              ├─entity
+│  │              │      ApiKey.java
+│  │              │      BacktestConfig.java
+│  │              │      BacktestResult.java
+│  │              │      BacktestTrade.java
+│  │              │      DataSyncHistory.java
+│  │              │      MarketCandle.java
+│  │              │      TestBalance.java
+│  │              │      TestTrade.java
+│  │              │      TradingMode.java
+│  │              │      User.java
+│  │              │      
+│  │              ├─exception
+│  │              │      DuplicateEmailException.java
+│  │              │      ErrorResponse.java
+│  │              │      GlobalExceptionHandler.java
+│  │              │      InvalidCredentialsException.java
+│  │              │      InvalidTokenException.java
+│  │              │      UserNotFoundException.java
+│  │              │      
+│  │              ├─indicator
+│  │              │      AdxCalculator.java
+│  │              │      AtrCalculator.java
+│  │              │      DonchianCalculator.java
+│  │              │      DonchianResult.java
+│  │              │      EmaCalculator.java
+│  │              │      MacdCalculator.java
+│  │              │      MacdResult.java
+│  │              │      RsiCalculator.java
+│  │              │      VolumeMaCalculator.java
+│  │              │      
+│  │              ├─model
+│  │              │  └─backtest
+│  │              │          BacktestContext.java
+│  │              │          Candle.java
+│  │              │          EquityPoint.java
+│  │              │          Trade.java
+│  │              │          
+│  │              ├─repository
+│  │              │      ApiKeyRepository.java
+│  │              │      BacktestConfigRepository.java
+│  │              │      BacktestResultRepository.java
+│  │              │      BacktestTradeRepository.java
+│  │              │      DataSyncHistoryRepository.java
+│  │              │      MarketCandleRepository.java
+│  │              │      TestBalanceRepository.java
+│  │              │      TestTradeRepository.java
+│  │              │      TradingModeRepository.java
+│  │              │      UserRepository.java
+│  │              │      
+│  │              ├─scanner
+│  │              │  │  SignalScanner.java
+│  │              │  │  
+│  │              │  ├─controller
+│  │              │  │      ScanController.java
+│  │              │  │      
+│  │              │  └─dto
+│  │              │          SignalScanResult.java
+│  │              │          StrategyInfo.java
+│  │              │          
+│  │              ├─security
+│  │              │      JwtAuthenticationFilter.java
+│  │              │      JwtTokenProvider.java
+│  │              │      
+│  │              ├─service
+│  │              │  │  ApiKeyService.java
+│  │              │  │  AuthService.java
+│  │              │  │  BacktestService.java
+│  │              │  │  DataSyncHistoryService.java
+│  │              │  │  EncryptionService.java
+│  │              │  │  MarketDataService.java
+│  │              │  │  TradingService.java
+│  │              │  │  UpbitApiService.java
+│  │              │  │  
+│  │              │  └─backtest
+│  │              │      │  BacktestEngine.java
+│  │              │      │  OrderExecutor.java
+│  │              │      │  PerformanceCalculator.java
+│  │              │      │  
+│  │              │      └─strategy
+│  │              │              BollingerBandsStrategy.java
+│  │              │              MACrossStrategy.java
+│  │              │              RSIStrategy.java
+│  │              │              Strategy.java
+│  │              │              StrategyFactory.java
+│  │              │              TechnicalIndicators.java
+│  │              │              
+│  │              ├─strategy
+│  │              │      SignalResult.java
+│  │              │      SignalType.java
+│  │              │      Strategy.java
+│  │              │      StrategyV1Donchian.java
+│  │              │      StrategyV2Pullback.java
+│  │              │      StrategyV3Reversal.java
+│  │              │      
+│  │              └─upbit
+│  │                  │  UpbitApiClient.java
+│  │                  │  
+│  │                  └─dto
+│  │                          UpbitCandleResponse.java
+│  │                          UpbitMarketResponse.java
+│  │                          
+│  └─resources
+│      │  application-secret.yml
+│      │  application.yml
+│      │  
+│      ├─static
+│      │      backselect.png
+│      │      BACKTEST_FLOWCHART.md
+│      │      dashboard.png
+│      │      mypage.png
+│      │      testr1.png
+│      │      testr2.png
+│      │      treading.png
+│      │      treading2.png
+│      │      UPBIT_AUTO_TRADING_TASK.md
+│      │      
+│      └─templates
+└─test
+    └─java
+        └─com
+            └─cryptobot
+                └─upbit
+                        UpbitBackendApplicationTests.java
+                        

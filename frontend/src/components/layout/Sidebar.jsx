@@ -11,6 +11,7 @@ const Sidebar = () => {
   const menuItems = [
     { path: '/dashboard', label: '메인대시보드' },
     { path: '/trading-scan', label: '매매스캔' },
+    { path: '/ema-trend', label: 'EMA 추세추종' },  // 🆕 신규 추가
     { path: '/trade-history', label: '거래히스토리' },
     { path: '/settings', label: '개인설정' }
   ];

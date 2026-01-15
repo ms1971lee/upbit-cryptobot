@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import TradingScanPage from './pages/TradingScanPage';
+import EmaTrendPage from './pages/EmaTrendPage';  // 🆕 신규 추가
 import SettingsPage from './pages/SettingsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import ApiSettingsPage from './pages/ApiSettingsPage';
@@ -30,6 +31,15 @@ function App() {
             element={
               <PrivateRoute>
                 <TradingScanPage />
+              </PrivateRoute>
+            }
+          />
+          {/* 🆕 EMA 추세추종 페이지 추가 */}
+          <Route
+            path="/ema-trend"
+            element={
+              <PrivateRoute>
+                <EmaTrendPage />
               </PrivateRoute>
             }
           />
