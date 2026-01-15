@@ -309,7 +309,7 @@ public class StrategyV4EmaTrend implements Strategy {
             stateMap.put(symbol, nextState);
             
             // Indicator Snapshot
-            if (signal.getType() != SignalType.NONE) {
+            if (signal.getSignalType() != SignalType.NONE) {
                 Map<String, Object> snapshot = new HashMap<>();
                 snapshot.put("state", nextState.name());
                 snapshot.put("prevState", currentState.name());
